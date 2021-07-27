@@ -1,0 +1,54 @@
+<ion-card>
+  <ion-card-content>
+    <ion-toolbar>
+      <ion-segment color="secondary" [(ngModel)]="divisionFilter" (ionChange)="filterDivision()">
+        <ion-segment-button value="division">
+          Division
+        </ion-segment-button>
+        <ion-segment-button value="all">
+          All
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+    <ion-list-header class="header">Standings</ion-list-header>
+    <ion-virtual-scroll [items]="standings" approxItemHeight="132px" [headerFn]="getHeader">
+      <ion-item-divider color="secondary" *virtualHeader="let header">
+        {{header}}
+      </ion-item-divider>
+
+      <ion-item *virtualItem="let team">
+        <ion-grid>
+          <ion-row class="ion-align-items-start">
+            <ion-col size="12">
+              <h4>{{team.teamName}}</h4>
+            </ion-col>
+            <ion-col>
+              <p>Wins:</p>
+              <p>{{team.wins}}</p>
+            </ion-col>
+            <ion-col>
+              <p>Losses:</p>
+              <p>{{team.losses}}</p>
+            </ion-col>
+            <ion-col>
+              <p>Pct:</p>
+              <p>{{team.winningPct}}</p>
+            </ion-col>
+            <ion-col>
+              <p>PF:</p>
+              <p>{{team.pointsFor}}</p>
+            </ion-col>
+            <ion-col>
+              <p>PA:</p>
+              <p>{{team.pointsAgainst}}</p>
+            </ion-col>
+            <ion-col>
+              <p>Diff:</p>
+              <p>{{team.pointsDiff}}</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-virtual-scroll>
+  </ion-card-content>
+</ion-card>

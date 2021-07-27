@@ -1,0 +1,25 @@
+<ion-card>
+  <ion-card-content>
+    <ion-list-header class="header">Games</ion-list-header>
+    <ion-list>
+      <ion-item *ngFor="let game of games" (click)="gameClicked(game)">
+          <ion-grid>
+            <ion-row class="ion-align-items-start">
+          <ion-col>
+            <p>
+              {{game.time | date:'M/d/yy'}} {{game.time | date:'shortTime'}}
+            </p>
+            <p>{{game.division}}</p>
+          </ion-col>
+          <ion-col size="6">
+            <p>{{game.homeAway}} {{game.opponent}} {{game.location}}</p>
+          </ion-col>
+          <ion-col>
+            <ion-badge [color]="getScoreDisplayBadgeClass(game)"><p>{{game.scoreDisplay}}</p></ion-badge>
+          </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

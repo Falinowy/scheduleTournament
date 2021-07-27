@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="tournaments"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Teams</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar placeholder="Search" (ionChange)="searchTeam($event)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-group *ngFor="let divison of teams">
+      <ion-item-divider color="secondary"> {{divison.divisionName}}</ion-item-divider>
+      <ion-item *ngFor="let team of divison.divisionTeams">
+        <ion-button shape="round" (click)="itemTapped(team)">{{team.name}}</ion-button>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content>

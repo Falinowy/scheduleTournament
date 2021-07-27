@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="my-teams"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Geolocation</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="buttons">
+      <ion-button expand="block"shape="round"(click)="getGeolocation()">Your geolocation</ion-button>
+  </div>
+  <ion-grid>
+    <div *ngIf="latitude"class="location">
+      <ion-item lines="inset">
+        <ion-label color="primary">Latitude: {{latitude}}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary" >Longitude: {{longitude}}</ion-label>
+      </ion-item>
+  </div>
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="my-teams"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Select a tournament</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content >
+  <ion-list>
+    <ion-item *ngFor="let tournament of tournaments">
+      <ion-button shape="round" (click)="itemTapped(tournament)">{{tournament.name}}</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

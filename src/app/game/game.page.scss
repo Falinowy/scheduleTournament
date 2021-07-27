@@ -1,0 +1,20 @@
+$border-style: thin solid gray;
+
+h3 {
+  margin-left: 10px;
+}
+h1 {
+  color: primary;
+}
+ion-button {
+  margin-left: 10px;
+}
+
+.top-bottom-border {
+    border-top: $border-style;
+    border-bottom: $border-style;
+}
+
+.divider-col {
+    border-right: $border-style;
+}

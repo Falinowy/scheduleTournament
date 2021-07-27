@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="teams"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Choose team</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-content>
+  <ion-row>
+      <ion-col width-50 text-center class="divider-col">
+          <ion-button fill="clear" expand="full" size="large" (click)="teamTapped(game.team1Id)">Home</ion-button>
+      </ion-col>
+      <ion-col width-50 text-center>
+          <ion-button fill="clear" expand="full" size="large" (click)="teamTapped(game.team2Id)">Away</ion-button>
+      </ion-col>
+  </ion-row>
+  <ion-row center>
+      <ion-col class="divider-col" (click)="teamTapped(game.team1Id)">
+        <div class="ion-text-center">
+          <h2>{{game.team1}}</h2>
+        </div>
+      </ion-col>
+      <ion-col width-50 text-center (click)="teamTapped(game.team2Id)">
+        <div class="ion-text-center">
+          <h2>{{game.team2}}</h2>
+        </div>
+      </ion-col>
+  </ion-row>
+  <ion-row  class="top-bottom-border">
+    <ion-col (click)="teamTapped(game.team1Id)">
+      <div class="ion-text-center">
+        <h1>{{game.team1Score}}</h1>
+      </div>
+    </ion-col>
+    <ion-col>
+      <div class="ion-text-center">
+        <ion-label> SCORE </ion-label>
+      </div>
+    </ion-col>
+    <ion-col (click)="teamTapped(game.team2Id)">
+      <div class="ion-text-center">
+        <h1>{{game.team2Score}}</h1>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-card-content>
+</ion-card>
+  <ion-card>
+      <ion-item>
+        <div class="ion-text-center">
+          <ion-label><ion-icon name="calendar"></ion-icon>
+          {{gameTime | date:'M/d/yy'}} {{gameTime | date:'shortTime'}}
+        </ion-label>
+        </div>
+      </ion-item>
+      <ion-row>
+          <ion-col>
+            <div class="ion-text-center">
+              <ion-label>{{game.location}}</ion-label>
+            </div>
+          </ion-col>
+      </ion-row>
+  </ion-card>
+</ion-content>

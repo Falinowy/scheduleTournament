@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-nav color="primary">
+    <ion-button menuToggle></ion-button>
+  </ion-nav>
+  <ion-toolbar color="secondary">
+    <ion-title>My teams</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+
+<ion-content>
+  <ion-card *ngIf="!favourites">
+      <ion-card-header class="my-teams-header">No Followed Teams</ion-card-header>
+      <ion-card-content>
+          <p>You are not currently following any teams.</p>
+          <p>First select a tournament, then you can follow teams
+              from their team page.</p>
+          <ion-button expand="full"shape="round"(click)="goToTournaments()">
+            <ion-icon name="search"></ion-icon>
+            <h6>Find a Tournament</h6>
+          </ion-button>
+      </ion-card-content>
+  </ion-card>
+
+
+  <ion-card *ngIf="favourites">
+    <ion-card-content>
+      <ion-list>
+          <ion-list-header class="header">Followed Teams</ion-list-header>
+          <ion-button expand="full"shape="round" *ngFor="let item of favourites" (click)="favouriteTapped(item)">
+            <h6>{{item.team.name}}<br/>{{item.tournamentName}}</h6>
+
+          </ion-button>
+      </ion-list>
+    </ion-card-content>
+      <ion-card-content>
+          <p>To follow more teams, select a tournament,
+              then you can follow teams from their team page.</p>
+              <ion-button expand="full" shape="round" color="secondary" (click)="goToTournaments()">
+                <ion-icon name="search"></ion-icon>Find a Tournament</ion-button>
+      </ion-card-content>
+  </ion-card>
+
+</ion-content>
