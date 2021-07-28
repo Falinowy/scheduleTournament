@@ -1,6 +1,6 @@
 # Project overview
 
-Elite Schedule
+Elite Schedule its a mobile app for adding your favourite teams and tracking their results in tournaments.
 
 ## Technologies
 - Angular 12.0.1
@@ -11,4 +11,4 @@ Elite Schedule
 
 ## Demo
 
-##TODO
+https://scheduletournament.netlify.app
