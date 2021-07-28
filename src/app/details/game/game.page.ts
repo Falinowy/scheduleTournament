@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { EliteApiService } from '../services/elite-api.service';
+import { Teams } from '../../models/teams.model';
+import { EliteApiService } from '../../services/elite-api.service';
 
 @Component({
   selector: 'app-game',
@@ -11,7 +12,7 @@ export class GamePage implements OnInit {
   game: any;
   gameTime: any;
   tourneyData: any;
-  team: any;
+  team: Teams;
   constructor(
     private route: ActivatedRoute,
     private eliteApi: EliteApiService,

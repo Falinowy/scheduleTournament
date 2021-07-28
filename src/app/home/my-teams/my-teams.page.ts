@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { EliteApiService } from '../services/elite-api.service';
-import { UserSettingsService } from '../services/user-settings.service';
+import { EliteApiService } from '../../services/elite-api.service';
+import { UserSettingsService } from '../../services/user-settings.service';
 
 @Component({
   selector: 'app-my-teams',

@@ -4,9 +4,9 @@ import { AlertController, ToastController } from '@ionic/angular';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { GamesComponent } from '../games/games.component';
-import { Standings } from '../models/standings.model';
-import { EliteApiService } from '../services/elite-api.service';
-import { UserSettingsService } from '../services/user-settings.service';
+import { Standings } from '../../models/standings.model';
+import { EliteApiService } from '../../services/elite-api.service';
+import { UserSettingsService } from '../../services/user-settings.service';
 
 @Component({
   selector: 'app-team-home',
@@ -36,7 +36,6 @@ export class TeamHomePage implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => this.team = params);
-    console.log(this.team);
     this.tourneyData = this.eliteApi.getCurrentTourney();
     this.getGames();
     this.getStandings();
@@ -61,8 +60,6 @@ export class TeamHomePage implements OnInit {
         };
       })
       .value();
-      console.log(this.games);
-      console.log(this.team);
     this.allGames = this.games;
     this.teamStanding = _.find(this.tourneyData.standings, { teamName: this.team.name });
     this.userSettings.isFavouriteTeam(this.team.id.toString()).then(value => this.isFollowing = value);

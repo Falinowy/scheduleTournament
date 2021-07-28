@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>New tournament</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form">
+    <ion-item>
+      <ion-label position="floating">Id</ion-label>
+      <ion-input formControlName="id"type="string"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Name</ion-label>
+      <ion-input formControlName="name"type="string"></ion-input>
+    </ion-item>
+    <ion-button expand="block" (click)="addTournament()" class="ion-margin-top">Add tournament</ion-button>
+  </form>
+</ion-content>

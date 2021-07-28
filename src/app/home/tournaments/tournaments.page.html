@@ -7,10 +7,15 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content >
+<ion-content>
   <ion-list>
     <ion-item *ngFor="let tournament of tournaments">
       <ion-button shape="round" (click)="itemTapped(tournament)">{{tournament.name}}</ion-button>
     </ion-item>
   </ion-list>
+  <div class="buttons">
+    <ion-button shape="round" fill="outline" (click)="openNewTournamentModal()">
+      Add tournament
+    </ion-button>
+  </div>
 </ion-content>

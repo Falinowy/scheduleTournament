@@ -19,4 +19,10 @@
       </ion-item>
     </ion-item-group>
   </ion-list>
-</ion-content>
+  <ion-content>
+    <ion-card *ngIf="!teams">
+      <ion-card-content >
+        <h1>Teams not found</h1>
+      </ion-card-content>
+    </ion-card>
+  </ion-content>

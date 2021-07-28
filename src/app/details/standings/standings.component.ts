@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import * as _ from 'lodash';
+import { Teams } from '../../models/teams.model';
 
 @Component({
   selector: 'app-standings',
@@ -8,8 +9,7 @@ import * as _ from 'lodash';
 })
 export class StandingsComponent implements OnInit {
   @Input() allStandings!: any;
-  @Input() team!: any;
-  @Input() tourneyData!: any;
+  @Input() team!: Teams;
   standings: any;
   divisionFilter = 'division';
   constructor() { }
@@ -18,8 +18,8 @@ export class StandingsComponent implements OnInit {
     this.filterDivision();
   }
 
-  getHeader(record, recordIndex, records){
-    if (recordIndex === 0 || record.division !== records[recordIndex-1].division) {
+  getHeader(record, recordIndex, records) {
+    if (recordIndex === 0 || record.division !== records[recordIndex - 1].division) {
       return record.division;
     }
     return null;

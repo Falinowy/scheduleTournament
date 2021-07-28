@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import * as _ from 'lodash';
-import { Teams } from '../models/teams.model';
-import { EliteApiService } from '../services/elite-api.service';
+import { Teams } from '../../models/teams.model';
+import { EliteApiService } from '../../services/elite-api.service';
 
 @Component({
   selector: 'app-teams',
@@ -35,14 +35,15 @@ export class TeamsPage implements OnInit {
     this.eliteApi
       .getTournametsDate(this.selectedTourney.id)
       .subscribe((result) => {
-        this.allTeams = result.teams;
-        this.allTeamDivisions = _.chain(result.teams)
-          .groupBy('division')
-          .toPairs()
-          .map((item) => _.zipObject(['divisionName', 'divisionTeams'], item))
-          .value();
-
-        this.teams = this.allTeamDivisions;
+        if(result != null) {
+          this.allTeams = result.teams;
+          this.allTeamDivisions = _.chain(result.teams)
+            .groupBy('division')
+            .toPairs()
+            .map((item) => _.zipObject(['divisionName', 'divisionTeams'], item))
+            .value();
+          this.teams = this.allTeamDivisions;
+        }
       });
   }
   searchTeam(searchText) {
