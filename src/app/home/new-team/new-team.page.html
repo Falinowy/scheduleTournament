@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>New team</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form">
+    <div formGroupName="teams">
+        <ion-item>
+          <ion-label position="floating">Id</ion-label>
+          <ion-input formControlName="id" type="string"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Coach</ion-label>
+          <ion-input formControlName="coach" type="string"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Name</ion-label>
+          <ion-input formControlName="name" type="string"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Division</ion-label>
+          <ion-input formControlName="division" type="string"></ion-input>
+        </ion-item>
+      </div>
+      <ion-button expand="block" (click)="addTeam()" class="ion-margin-top" [disabled]="!form.valid">Add team
+      </ion-button>
+  </form>
+</ion-content>

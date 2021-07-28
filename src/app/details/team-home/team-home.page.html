@@ -12,7 +12,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-card>
+  <ion-card *ngIf="teamStanding">
     <ion-card-content>
       <ion-row>
         <ion-col>
@@ -37,7 +37,16 @@
       </ion-item>
     </ion-card-content>
   </ion-card>
-  <app-games [games]="games" [tourneyData]="tourneyData">
-  </app-games>
-  <app-standings [allStandings]="allStandings"[team]="team"></app-standings>
+  <app-games *ngIf="allGames" [games]="games" [tourneyData]="tourneyData"></app-games>
+  <app-standings *ngIf="teamStanding" [allStandings]="allStandings" [team]="team"></app-standings>
+  <ion-card *ngIf="!allGames">
+    <ion-card-content >
+      <h1>Games not found</h1>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="!teamStanding">
+    <ion-card-content >
+      <h1>Standings not found</h1>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

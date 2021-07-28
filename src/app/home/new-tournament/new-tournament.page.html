@@ -18,6 +18,6 @@
       <ion-label position="floating">Name</ion-label>
       <ion-input formControlName="name"type="string"></ion-input>
     </ion-item>
-    <ion-button expand="block" (click)="addTournament()" class="ion-margin-top">Add tournament</ion-button>
+    <ion-button expand="block" (click)="addTournament()" class="ion-margin-top" [disabled]="!form.valid">Add tournament</ion-button>
   </form>
 </ion-content>

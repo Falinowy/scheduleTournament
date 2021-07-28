@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import * as _ from 'lodash';
@@ -21,7 +21,7 @@ export class TeamHomePage implements OnInit {
   allGames: any[];
   useDateFilter = false;
   isFollowing = false;
-  games: any[];
+  games: any;
   team: any;
   divisionFilter = 'division';
   tourneyData: any;
@@ -39,10 +39,11 @@ export class TeamHomePage implements OnInit {
     this.tourneyData = this.eliteApi.getCurrentTourney();
     this.getGames();
     this.getStandings();
+    console.log(this.games);
+    console.log(this.teamStanding);
   }
 
   getGames() {
-    console.log(this.tourneyData);
     this.games = _.chain(this.tourneyData.games)
       .filter(g => this.team.name === g.team1 || this.team.name === g.team2)
       .map(g => {
@@ -60,13 +61,19 @@ export class TeamHomePage implements OnInit {
         };
       })
       .value();
+    if (this.games.length === 0) {
+      this.games = undefined;
+    }
     this.allGames = this.games;
     this.teamStanding = _.find(this.tourneyData.standings, { teamName: this.team.name });
-    this.userSettings.isFavouriteTeam(this.team.id.toString()).then(value => this.isFollowing = value);
+
+    if (this.team.id != null) {
+      this.userSettings.isFavouriteTeam(this.team.id.toString()).then(value => this.isFollowing = value);
+    }
   }
   dateChanged() {
     if (this.useDateFilter) {
-      this.games =_.filter(this.allGames, g => moment(g.time).isSame(this.dateFilter, 'day'));
+      this.games = _.filter(this.allGames, g => moment(g.time).isSame(this.dateFilter, 'day'));
     } else {
       this.games = this.allGames;
     }
@@ -98,11 +105,11 @@ export class TeamHomePage implements OnInit {
   }
 
   toggleFollow() {
-    if(this.isFollowing) {
+    if (this.isFollowing) {
       const confirm = this.alertController.create({
         header: 'Unfollow?',
         message: 'Are you sure you want to unfollow?',
-        buttons : [
+        buttons: [
           {
             text: 'Yes',
             handler: () => {
@@ -115,17 +122,17 @@ export class TeamHomePage implements OnInit {
                 position: 'bottom'
               }).then(res => {
                 res.present();
-            });
-          }
-        },
-          {text: 'No'}
+              });
+            }
+          },
+          { text: 'No' }
         ]
       }).then(res => {
         res.present();
       });
     } else {
       this.isFollowing = true;
-      this.userSettings.favouriteTeam(this.team,this.tourneyData.tournament.id,this.tourneyData.tournament.name);
+      this.userSettings.favouriteTeam(this.team, this.tourneyData.tournament.id, this.tourneyData.tournament.name);
     }
 
   }

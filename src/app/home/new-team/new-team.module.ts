@@ -4,18 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TeamsPageRoutingModule } from './teams-routing.module';
+import { NewTeamPageRoutingModule } from './new-team-routing.module';
 
-import { TeamsPage } from './teams.page';
+import { NewTeamPage } from './new-team.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TeamsPageRoutingModule,
+    NewTeamPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [TeamsPage]
+  declarations: [NewTeamPage]
 })
-export class TeamsPageModule {}
+export class NewTeamPageModule {}

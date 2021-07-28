@@ -36,6 +36,6 @@ export class TournamentsPage  implements OnInit {
     });
     await modal.present();
     const data = await modal.onWillDismiss();
-    console.log(data);
+
   }
 }

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import * as _ from 'lodash';
 import { Teams } from '../../models/teams.model';
 import { EliteApiService } from '../../services/elite-api.service';
+import { NewTeamPage } from '../new-team/new-team.page';
 
 @Component({
   selector: 'app-teams',
@@ -19,7 +21,8 @@ export class TeamsPage implements OnInit {
   constructor(
     private router: Router,
     private eliteApi: EliteApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -27,6 +30,7 @@ export class TeamsPage implements OnInit {
       (params: Params) => (this.selectedTourney = params)
     );
     this.getTournametsDate();
+
   }
   itemTapped(team) {
     this.router.navigate(['team-home', team]);
@@ -61,5 +65,17 @@ export class TeamsPage implements OnInit {
       }
     });
     this.teams = filterdTeams;
+  }
+
+  async openNewTeamModal(selectedTourney) {
+    const modal = await this.modalController.create({
+      component: NewTeamPage,
+      componentProps: {id: selectedTourney},
+      swipeToClose: true,
+      cssClass: 'my-custom-class'
+    });
+    await modal.present();
+    const data = await modal.onWillDismiss();
+
   }
 }

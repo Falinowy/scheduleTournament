@@ -30,7 +30,7 @@ export class NewTournamentPage implements OnInit {
   private buildForm() {
     this.form = this.formBuilder.group({
       id: new FormControl('', Validators.required),
-      name: ['', { validators: [Validators.required ]}],
+      name: new FormControl('', Validators.required),
     });
   }
 }

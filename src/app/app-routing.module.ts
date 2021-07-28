@@ -31,17 +31,21 @@ const routes: Routes = [
     loadChildren: () => import('./additional functions/geolocation/geolocation.module').then( m => m.GeolocationPageModule)
   },
   {
-    path: '',
-    redirectTo: 'my-teams',
-    pathMatch: 'full'
-  },
-  {
     path: 'camera',
     loadChildren: () => import('./additional functions/camera/camera.module').then( m => m.CameraPageModule)
   },
   {
     path: 'new-tournament',
     loadChildren: () => import('./home/new-tournament/new-tournament.module').then( m => m.NewTournamentPageModule)
+  },
+  {
+    path: 'new-team',
+    loadChildren: () => import('./home/new-team/new-team.module').then( m => m.NewTeamPageModule)
+  },
+  {
+    path: '',
+    redirectTo: 'my-teams',
+    pathMatch: 'full'
   },
 ];
 
