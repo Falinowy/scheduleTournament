@@ -1,6 +1,7 @@
 # Project overview
 
 Elite Schedule its a mobile app for adding your favourite teams and tracking their results in tournaments.
+You can test this app in your computer but press f12 and turn on mobile version
 
 ## Technologies
 - Angular 12.0.1
