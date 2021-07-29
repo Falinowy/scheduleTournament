@@ -31,10 +31,6 @@ const routes: Routes = [
     loadChildren: () => import('./additional functions/geolocation/geolocation.module').then( m => m.GeolocationPageModule)
   },
   {
-    path: 'camera',
-    loadChildren: () => import('./additional functions/camera/camera.module').then( m => m.CameraPageModule)
-  },
-  {
     path: 'new-tournament',
     loadChildren: () => import('./home/new-tournament/new-tournament.module').then( m => m.NewTournamentPageModule)
   },
