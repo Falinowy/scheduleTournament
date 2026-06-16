@@ -24,3 +24,29 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+/* Desktop Layout Enhancements */
+@media (min-width: 992px) {
+  ion-split-pane {
+    --side-max-width: 300px;
+    --side-min-width: 280px;
+  }
+
+  /* Center the main content area to mimic a responsive "app paper" */
+  .ion-page#main {
+    background: var(--ion-color-step-100, #f0f0f0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Restrict the router outlet width so content doesn't stretch */
+  ion-router-outlet {
+    max-width: 800px;
+    width: 100%;
+    height: 100%;
+    position: relative !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    background: var(--ion-background-color, #ffffff);
+  }
+}

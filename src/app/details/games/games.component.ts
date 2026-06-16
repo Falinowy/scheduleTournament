@@ -1,24 +1,30 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import * as _ from 'lodash';
+import { DatePipe } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { TeamGameView } from '../../models/team-game-view.model';
+import { TourneyData } from '../../models/tourneyData.model';
 
 @Component({
   selector: 'app-games',
   templateUrl: './games.component.html',
   styleUrls: ['./games.component.scss'],
+  imports: [IonicModule, DatePipe],
 })
 export class GamesComponent {
-  @Input() games!: any;
-  @Input() tourneyData!: any;
-  constructor(private router: Router) { }
+  games = input.required<TeamGameView[]>();
+  tourneyData = input.required<TourneyData>();
 
-  gameClicked(game) {
-    const sourceGame = this.tourneyData.games.find(g => g.id === game.gameId);
-    this.router.navigate(['game', sourceGame]);
+  private readonly router = inject(Router);
+
+  gameClicked(game: TeamGameView): void {
+    const sourceGame = this.tourneyData().games.find((g) => g.id === game.gameId);
+    if (sourceGame) {
+      void this.router.navigate(['game', sourceGame.id]);
+    }
   }
 
-  getScoreDisplayBadgeClass(game) {
-    return game.scoreDisplay.indexOf('W:') === 0 ? 'primary' : 'danger';
+  getScoreDisplayBadgeClass(game: TeamGameView): string {
+    return game.scoreDisplay.startsWith('W:') ? 'primary' : 'danger';
   }
-
 }

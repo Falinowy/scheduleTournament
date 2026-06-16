@@ -1,12 +1,11 @@
 export interface Standings {
-  division: string;
-  losses: number;
-  pointsAgainst: number;
-  pointsDiff: number;
-  pointsFor: number;
-  teamId: number;
-  teamName: string;
-  winningPct: string;
-  wins: number;
+  readonly division: string;
+  readonly losses: number;
+  readonly pointsAgainst: number;
+  readonly pointsDiff: number;
+  readonly pointsFor: number;
+  readonly teamId: number;
+  readonly teamName: string;
+  readonly winningPct: string;
+  readonly wins: number;
 }
-

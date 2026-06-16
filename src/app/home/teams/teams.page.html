@@ -12,20 +12,30 @@
 
 <ion-content>
   <ion-list>
-    <ion-item-group *ngFor="let divison of teams">
-      <ion-item-divider color="secondary"> {{divison.divisionName}}</ion-item-divider>
-      <ion-item *ngFor="let team of divison.divisionTeams">
-        <ion-button shape="round" (click)="itemTapped(team)">{{team.name}}</ion-button>
-      </ion-item>
-    </ion-item-group>
+    @for (division of teams(); track division.divisionName) {
+      <ion-item-group>
+        <ion-item-divider color="secondary"> {{division.divisionName}}</ion-item-divider>
+        @for (team of division.divisionTeams; track team.id) {
+          <ion-item>
+            <ion-button shape="round" (click)="selectTeam(team)">{{team.name}}</ion-button>
+          </ion-item>
+        }
+      </ion-item-group>
+    }
   </ion-list>
-    <ion-card *ngIf="!teams">
+  @if (isLoading()) {
+    <div class="ion-text-center ion-padding">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else if (!teams() || teams().length === 0) {
+    <ion-card>
       <ion-card-content >
         <h1>Teams not found</h1>
       </ion-card-content>
     </ion-card>
-    <div class="buttons">
-      <ion-button shape="round" fill="outline"expand="block" (click)="openNewTeamModal(selectedTourney.id)">
+  }
+  <div class="buttons">
+      <ion-button shape="round" fill="outline" expand="block" (click)="openNewTeamModal()">
         Add team
       </ion-button>
     </div>

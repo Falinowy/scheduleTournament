@@ -1,5 +1,4 @@
 export interface Tournament {
-  id: string;
-  name: string;
+  readonly id: string;
+  readonly name: string;
 }
-

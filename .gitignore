@@ -1,31 +1,72 @@
-# Specifies intentionally untracked files to ignore when using Git
-# http://git-scm.com/docs/gitignore
+# See https://docs.github.com/en/get-started/git-basics/ignoring-files
 
-*~
-*.sw[mnpcod]
-.tmp
-*.tmp
-*.tmp.*
+# --- Dependencies ---
+node_modules/
+
+# --- Angular CLI ---
+.angular/
+*.tsbuildinfo
+
+# --- Build / output ---
+dist/
+www/
+out-tsc/
+tmp/
+
+# --- Ionic / Cordova ---
+.ionic/
+.sass-cache/
+.sourcemaps/
+.versions/
+platforms/
+plugins/
+
+# --- Capacitor (native projects, if generated locally) ---
+android/
+ios/
+.capacitor/
+
+# --- Tests & coverage ---
+coverage/
+.nyc_output/
+libpeerconnection.log
+testem.log
+/typings
+
+# --- Logs ---
+*.log
+log.txt
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# --- IDE / OS ---
+.idea/
+.vscode/
 *.sublime-project
 *.sublime-workspace
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
+*~
+*.sw[mnpcod]
+.tmp
+*.tmp
+*.tmp.*
 
-*.log
-log.txt
-npm-debug.log*
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
 
-/.idea
-/.ionic
-/.sass-cache
-/.sourcemaps
-/.versions
-/.vscode
-/coverage
-/dist
-/node_modules
-/platforms
-/plugins
-/www
+# --- Firebase / local tooling ---
+.firebase/
+*-debug.log
+.runtimeconfig.json
+
+# --- Misc ---
+*.orig
+*.local

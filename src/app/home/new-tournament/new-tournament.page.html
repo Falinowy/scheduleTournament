@@ -12,11 +12,11 @@
   <form [formGroup]="form">
     <ion-item>
       <ion-label position="floating">Id</ion-label>
-      <ion-input formControlName="id"type="string"></ion-input>
+      <ion-input formControlName="id" type="text"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Name</ion-label>
-      <ion-input formControlName="name"type="string"></ion-input>
+      <ion-input formControlName="name" type="text"></ion-input>
     </ion-item>
     <ion-button expand="block" (click)="addTournament()" class="ion-margin-top" [disabled]="!form.valid">Add tournament</ion-button>
   </form>

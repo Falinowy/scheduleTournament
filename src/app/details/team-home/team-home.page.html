@@ -11,42 +11,56 @@
     <ion-title>{{team.name}}</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
-  <ion-card *ngIf="teamStanding">
-    <ion-card-content>
-      <ion-row>
-        <ion-col>
-          <h2>Record: {{teamStanding.wins}}-{{teamStanding.losses}}</h2>
-          <p>Coach: {{team.coach}}</p>
-        </ion-col>
-        <ion-col>
-          <ion-button (click)="toggleFollow()" *ngIf="!isFollowing">
-            <ion-icon name="star"></ion-icon>
-            Add favourite
-          </ion-button>
-          <ion-button (click)="toggleFollow()" *ngIf="isFollowing">
-            <ion-icon name="star"></ion-icon>
-          </ion-button>
-        </ion-col>
-      </ion-row>
-      <ion-item>
-        <ion-label class="date-filter">Date filter:</ion-label>
-        <ion-datetime displayFormat="M/D/YYYY" pickerFormat="M/D/YYYY" [(ngModel)]="dateFilter"
-          (ionChange)="dateChanged()" [disabled]="!useDateFilter"></ion-datetime>
-        <ion-toggle [(ngModel)]="useDateFilter" (ionChange)="dateChanged()"></ion-toggle>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
-  <app-games *ngIf="allGames" [games]="games" [tourneyData]="tourneyData"></app-games>
-  <app-standings *ngIf="teamStanding" [allStandings]="allStandings" [team]="team"></app-standings>
-  <ion-card *ngIf="!allGames">
-    <ion-card-content >
-      <h1>Games not found</h1>
-    </ion-card-content>
-  </ion-card>
-  <ion-card *ngIf="!teamStanding">
-    <ion-card-content >
-      <h1>Standings not found</h1>
-    </ion-card-content>
-  </ion-card>
+  @if (teamStanding) {
+    <ion-card>
+      <ion-card-content>
+        <ion-row>
+          <ion-col>
+            <h2>Record: {{teamStanding.wins}}-{{teamStanding.losses}}</h2>
+            <p>Coach: {{team.coach}}</p>
+          </ion-col>
+          <ion-col>
+            @if (!isFollowing) {
+              <ion-button (click)="followTeam()">
+                <ion-icon name="star"></ion-icon>
+                Add favourite
+              </ion-button>
+            } @else {
+              <ion-button (click)="unfollowTeam()">
+                <ion-icon name="star"></ion-icon>
+              </ion-button>
+            }
+          </ion-col>
+        </ion-row>
+        <ion-item>
+          <ion-label class="date-filter">Date filter:</ion-label>
+          <ion-datetime displayFormat="M/D/YYYY" pickerFormat="M/D/YYYY" [(ngModel)]="dateFilter"
+            (ionChange)="dateChanged()" [disabled]="!useDateFilter"></ion-datetime>
+          <ion-toggle [(ngModel)]="useDateFilter" (ionChange)="dateChanged()"></ion-toggle>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  }
+
+  @if (games?.length) {
+    <app-games [games]="games!" [tourneyData]="tourneyData"></app-games>
+  } @else {
+    <ion-card>
+      <ion-card-content>
+        <h1>Games not found</h1>
+      </ion-card-content>
+    </ion-card>
+  }
+
+  @if (teamStanding) {
+    <app-standings [allStandings]="allStandings" [team]="team"></app-standings>
+  } @else {
+    <ion-card>
+      <ion-card-content>
+        <h1>Standings not found</h1>
+      </ion-card-content>
+    </ion-card>
+  }
 </ion-content>

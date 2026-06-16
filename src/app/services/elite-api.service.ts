@@ -1,43 +1,68 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { TourneyData } from '../models/tourneyData.model';
 import { Tournament } from '../models/tournament.model';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { Teams } from '../models/teams.model';
+import { Team } from '../models/teams.model';
+
+interface FirebaseListSnapshot<T> {
+  key: string;
+  payload: { val: () => T };
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EliteApiService {
-  touUrl = '/tournaments';
-  touDatUrl = '/tournaments-data';
-  private baseUrl = 'https://elite-schedule-app-d0eb5-default-rtdb.europe-west1.firebasedatabase.app';
-  private currentTourney: any = {};
-  constructor(public http: HttpClient,public db: AngularFireDatabase) { }
+  private readonly tournamentsPath = '/tournaments';
+  private readonly tournamentsDataPath = '/tournaments-data';
+  private readonly baseUrl =
+    'https://elite-schedule-app-d0eb5-default-rtdb.europe-west1.firebasedatabase.app';
 
-  getTournamets() {
-    return this.db.list<Tournament>(this.touUrl).snapshotChanges()
-      .pipe(map(response => response.map(tournament => this.assignKey(tournament))));
-  }
-  getTournametsDate(tourneyId): Observable<any> {
-    return this.http.get(`${this.baseUrl}/tournaments-data/${tourneyId}.json`)
-    .pipe(map((response: Response) => {
-      this.currentTourney = response;
-      return this.currentTourney;
-  }));
-}
-  getCurrentTourney() {
-    return this.currentTourney;
+  currentTourney = signal<TourneyData | null>(null);
+
+  private readonly http = inject(HttpClient);
+  private readonly db = inject(AngularFireDatabase);
+
+  private readonly tournamentsSignal = toSignal(
+    this.db.list<Tournament>(this.tournamentsPath).snapshotChanges().pipe(
+      map((snapshots) => snapshots.map((snapshot) => this.assignKey(snapshot))),
+    ),
+    { initialValue: [] }
+  );
+
+  getTournaments(): Signal<(Tournament & { key: string })[]> {
+    return this.tournamentsSignal;
   }
 
-  addTournament(tournament: Tournament) {
-      return this.db.list<Tournament>(this.touUrl).push(tournament);
+  getTournamentData(tourneyId: string): Observable<TourneyData> {
+    return this.http
+      .get<TourneyData>(`${this.baseUrl}/tournaments-data/${tourneyId}.json`)
+      .pipe(
+        tap((data) => {
+          this.currentTourney.set(data);
+        }),
+        catchError((err: unknown) => {
+          console.error('Failed to load tournament data', err);
+          return throwError(() => err);
+        }),
+      );
   }
-  addTeam(team: Teams,tourneyId) {
-    return this.db.list<Teams>(`${this.touDatUrl}/${tourneyId}`).push(team);
-}
-  private assignKey(tournament) {
-    return { ...tournament.payload.val(), key: tournament.key };
+
+
+
+  addTournament(tournament: Tournament): void {
+    void this.db.database.ref(this.tournamentsPath).push(tournament);
+  }
+
+  addTeam(team: Team, tourneyId: string): void {
+    void this.db.database.ref(`${this.tournamentsDataPath}/${tourneyId}`).push(team);
+  }
+
+  private assignKey<T>(snapshot: FirebaseListSnapshot<T>): T & { key: string } {
+    return { ...snapshot.payload.val(), key: snapshot.key };
   }
 }

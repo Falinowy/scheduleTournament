@@ -1,7 +1,6 @@
-export interface Teams {
-  coach: string;
-  division: string;
-  id: number;
-  name: string;
+export interface Team {
+  readonly coach: string;
+  readonly division: string;
+  readonly id: number;
+  readonly name: string;
 }
-

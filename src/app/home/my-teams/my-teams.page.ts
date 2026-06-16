@@ -1,33 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { FavouriteTeam } from '../../models/favourite-team.model';
 import { EliteApiService } from '../../services/elite-api.service';
+import { AppMenuService } from '../../services/app-menu.service';
 import { UserSettingsService } from '../../services/user-settings.service';
 
 @Component({
   selector: 'app-my-teams',
   templateUrl: './my-teams.page.html',
   styleUrls: ['./my-teams.page.scss'],
+  imports: [IonicModule],
 })
-export class MyTeamsPage{
-  public favourites: any;
-  constructor(
-    private router: Router,
-    private eliteApi: EliteApiService,
-    private userSettingsService: UserSettingsService
-  ) {}
+export class MyTeamsPage {
+  favourites: FavouriteTeam[] = [];
 
-  ionViewDidEnter() {
-    this.getFavouriteTeam();
+  private readonly router = inject(Router);
+  private readonly eliteApi = inject(EliteApiService);
+  private readonly appMenu = inject(AppMenuService);
+  private readonly userSettings = inject(UserSettingsService);
+
+
+  ionViewDidEnter(): void {
+    void this.loadFavourites();
   }
-  goToTournaments() {
-    this.router.navigate(['tournaments']);
+
+  goToTournaments(): void {
+    void this.router.navigate(['tournaments']);
   }
-  favouriteTapped(favourite) {
+
+  openMenu(): void {
+    this.appMenu.open();
+  }
+
+  navigateToFavourite(favourite: FavouriteTeam): void {
     this.eliteApi
-      .getTournametsDate(favourite.tournamentId)
-      .subscribe((t) => this.router.navigate(['team-home', favourite.team]));
+      .getTournamentData(favourite.tournamentId)
+      .pipe(take(1))
+      .subscribe(() => {
+        void this.router.navigate(['team-home', favourite.team.id]);
+      });
   }
-  getFavouriteTeam() {
-    this.favourites = this.userSettingsService.getAllFavourites();
+
+  private async loadFavourites(): Promise<void> {
+    this.favourites = await this.userSettings.getAllFavourites();
   }
 }

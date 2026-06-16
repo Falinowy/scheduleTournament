@@ -1,41 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
+import { Tournament } from '../../models/tournament.model';
 import { EliteApiService } from '../../services/elite-api.service';
 import { NewTournamentPage } from '../new-tournament/new-tournament.page';
-
 
 @Component({
   selector: 'app-tournaments',
   templateUrl: './tournaments.page.html',
   styleUrls: ['./tournaments.page.scss'],
+  imports: [IonicModule],
 })
-export class TournamentsPage  implements OnInit {
-  tournaments: any;
+export class TournamentsPage {
+  private readonly router = inject(Router);
+  private readonly eliteApi = inject(EliteApiService);
+  private readonly modalController = inject(ModalController);
 
-  constructor(
-    private router: Router,
-    private eliteApi: EliteApiService,
-    public modalController: ModalController) { }
-  ngOnInit(): void {
-    this.getTournamets();
+  tournaments = this.eliteApi.getTournaments();
+
+  selectTournament(tournament: Tournament): void {
+    void this.router.navigate(['teams', tournament.id]);
   }
-  itemTapped(tournament) {
-    this.router.navigate(['teams',tournament]);
-  }
-  getTournamets(){
-    this.eliteApi.getTournamets().subscribe(result => {
-      this.tournaments = result;
-    });
-  }
-  async openNewTournamentModal() {
+
+  async openNewTournamentModal(): Promise<void> {
     const modal = await this.modalController.create({
       component: NewTournamentPage,
-      swipeToClose: true,
-      cssClass: 'my-custom-class'
+      canDismiss: true,
     });
     await modal.present();
-    const data = await modal.onWillDismiss();
-
+    await modal.onWillDismiss();
   }
 }
