@@ -4,6 +4,7 @@
 
 export const environment = {
   production: true,
+  apiUrl: 'http://localhost:8080/api',
   firebaseConfig : {
     apiKey: 'AIzaSyBuS-oJco8dqW8assw-TzXtcLoCsc3bW9U',
     authDomain: 'elite-schedule-app-d0eb5.firebaseapp.com',
