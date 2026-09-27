@@ -35,6 +35,10 @@ export class TeamsPage implements OnInit {
     this.loadTournamentData();
   }
 
+  doRefresh(event: any): void {
+    this.loadTournamentData(true, () => event.target.complete());
+  }
+
   selectTeam(team: Team): void {
     void this.router.navigate(['team-home', this.tourneyId(), team.id]);
   }
@@ -67,7 +71,7 @@ export class TeamsPage implements OnInit {
 
     const { role } = await modal.onWillDismiss();
     if (role === 'added') {
-      this.loadTournamentData();
+      this.loadTournamentData(true);
     }
   }
 
@@ -82,7 +86,7 @@ export class TeamsPage implements OnInit {
           role: 'destructive',
           handler: () => {
             this.eliteApi.deleteTeam(this.tourneyId(), team.id).subscribe({
-              next: () => this.loadTournamentData(),
+              next: () => this.loadTournamentData(true),
               error: async (err: HttpErrorResponse) => {
                 console.error('Failed to delete team', err);
                 const message = err.error?.detail || 'An unexpected error occurred while deleting the team.';
@@ -96,13 +100,18 @@ export class TeamsPage implements OnInit {
     await alert.present();
   }
 
-  private loadTournamentData(): void {
-    this.isLoading.set(true);
+  private loadTournamentData(forceRefresh = false, onComplete?: () => void): void {
+    if (!forceRefresh) {
+      this.isLoading.set(true);
+    }
     this.eliteApi
-      .getTournamentData(this.tourneyId())
+      .getTournamentData(this.tourneyId(), forceRefresh)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.isLoading.set(false))
+        finalize(() => {
+          this.isLoading.set(false);
+          if (onComplete) onComplete();
+        })
       )
       .subscribe({
         next: (result) => {

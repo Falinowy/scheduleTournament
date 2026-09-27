@@ -1,5 +1,6 @@
 import { Component, DestroyRef, inject, input, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -25,23 +26,27 @@ export class GamePage implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  ngOnInit(): void {
-    // Use cached data if it matches the current tournament
-    const cached = this.eliteApi.currentTourney();
-    if (cached && cached.tournament?.id === this.tourneyId()) {
-      this.initializeWithData(cached);
-      return;
-    }
 
-    // Otherwise fetch from API
+  doRefresh(event: any): void {
+    this.eliteApi
+      .getTournamentData(this.tourneyId(), true)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => event.target.complete())
+      )
+      .subscribe({
+        next: (data) => this.initializeWithData(data),
+        error: () => void this.router.navigate(['tournaments']),
+      });
+  }
+
+  ngOnInit(): void {
     this.eliteApi
       .getTournamentData(this.tourneyId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => this.initializeWithData(data),
-        error: () => {
-          void this.router.navigate(['tournaments']);
-        },
+        error: () => void this.router.navigate(['tournaments']),
       });
   }
 

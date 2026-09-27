@@ -22,7 +22,13 @@ export class TournamentsPage {
   tournaments = this.eliteApi.getTournaments();
 
   ionViewWillEnter(): void {
-    this.eliteApi.refreshTournaments();
+    this.eliteApi.refreshTournaments().subscribe();
+  }
+
+  doRefresh(event: any): void {
+    this.eliteApi.refreshTournaments().subscribe({
+      complete: () => event.target.complete()
+    });
   }
 
   selectTournament(tournament: Tournament): void {

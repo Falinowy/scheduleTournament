@@ -1,7 +1,7 @@
 import { inject, Injectable, signal, Signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, shareReplay, tap } from 'rxjs/operators';
 import { TourneyData } from '../models/tourneyData.model';
 import { Tournament } from '../models/tournament.model';
 import { Team } from '../models/teams.model';
@@ -13,44 +13,52 @@ import { environment } from '../../environments/environment';
 export class EliteApiService {
   private readonly baseUrl = environment.apiUrl;
 
-  currentTourney = signal<TourneyData | null>(null);
+
 
   private readonly http = inject(HttpClient);
 
   private readonly tournamentsSignal = signal<(Tournament & { key: string })[]>([]);
 
   constructor() {
-    this.refreshTournaments();
+    this.refreshTournaments().subscribe();
   }
 
   getTournaments(): Signal<(Tournament & { key: string })[]> {
     return this.tournamentsSignal;
   }
 
-  refreshTournaments(): void {
-    this.http.get<(Tournament & { key: string })[]>(`${this.baseUrl}/tournaments`).subscribe({
-      next: (data) => this.tournamentsSignal.set(data || []),
-      error: (err) => console.error('Failed to load tournaments', err)
-    });
+  refreshTournaments(): Observable<(Tournament & { key: string })[]> {
+    return this.http.get<(Tournament & { key: string })[]>(`${this.baseUrl}/tournaments`).pipe(
+      tap({
+        next: (data) => this.tournamentsSignal.set(data || []),
+        error: (err) => console.error('Failed to load tournaments', err)
+      })
+    );
   }
 
-  getTournamentData(tourneyId: string): Observable<TourneyData> {
-    return this.http
-      .get<TourneyData>(`${this.baseUrl}/tournaments/${tourneyId}/data`)
-      .pipe(
-        tap((data) => {
-          this.currentTourney.set(data);
-        }),
-        catchError((err: unknown) => {
-          console.error('Failed to load tournament data', err);
-          return throwError(() => err);
-        }),
-      );
+  private tourneyDataCache = new Map<string, Observable<TourneyData>>();
+
+  getTournamentData(tourneyId: string, forceRefresh = false): Observable<TourneyData> {
+    if (forceRefresh || !this.tourneyDataCache.has(tourneyId)) {
+      const request = this.http
+        .get<TourneyData>(`${this.baseUrl}/tournaments/${tourneyId}/data`)
+        .pipe(
+          shareReplay(1),
+          catchError((err: unknown) => {
+            console.error('Failed to load tournament data', err);
+            this.tourneyDataCache.delete(tourneyId);
+            return throwError(() => err);
+          })
+        );
+      this.tourneyDataCache.set(tourneyId, request);
+    }
+    return this.tourneyDataCache.get(tourneyId)!;
   }
+
 
   addTournament(tournament: Tournament): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/tournaments`, tournament).pipe(
-      tap(() => this.refreshTournaments())
+      tap(() => this.refreshTournaments().subscribe())
     );
   }
 
@@ -60,7 +68,7 @@ export class EliteApiService {
 
   deleteTournament(tourneyId: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/tournaments/${tourneyId}`).pipe(
-      tap(() => this.refreshTournaments())
+      tap(() => this.refreshTournaments().subscribe())
     );
   }
 

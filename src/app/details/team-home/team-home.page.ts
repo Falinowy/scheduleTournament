@@ -1,8 +1,9 @@
 import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AlertController, ToastController, IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule } from '@ionic/angular';
 import { GamesComponent } from '../games/games.component';
 import { StandingsComponent } from '../standings/standings.component';
 import { Standings } from '../../models/standings.model';
@@ -12,6 +13,7 @@ import { Game } from '../../models/games.model';
 import { TourneyData } from '../../models/tourneyData.model';
 import { EliteApiService } from '../../services/elite-api.service';
 import { UserSettingsService } from '../../services/user-settings.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-team-home',
@@ -37,7 +39,7 @@ export class TeamHomePage implements OnInit {
   private readonly router = inject(Router);
   private readonly eliteApi = inject(EliteApiService);
   private readonly alertController = inject(AlertController);
-  private readonly toastController = inject(ToastController);
+  private readonly toastService = inject(ToastService);
   private readonly userSettings = inject(UserSettingsService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -75,7 +77,7 @@ export class TeamHomePage implements OnInit {
           handler: async () => {
             this.isFollowing = false;
             await this.userSettings.unfollowTeam(this.team, this.tourneyData.tournament.id);
-            await this.showToast('You have unfollowed this team');
+            await this.toastService.showSuccess('You have unfollowed this team');
           },
         },
         { text: 'No' },
@@ -88,21 +90,23 @@ export class TeamHomePage implements OnInit {
     void this.router.navigate(['my-teams']);
   }
 
-  private loadData(): void {
-    // Use cached data if it matches the current tournament
-    const cached = this.eliteApi.currentTourney();
-    if (cached && cached.tournament?.id === this.tourneyId()) {
-      this.initializeWithData(cached);
-      return;
-    }
+  doRefresh(event: any): void {
+    this.loadData(true, () => event.target.complete());
+  }
 
-    // Otherwise fetch from API
+  private loadData(forceRefresh = false, onComplete?: () => void): void {
     this.eliteApi
-      .getTournamentData(this.tourneyId())
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .getTournamentData(this.tourneyId(), forceRefresh)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          if (onComplete) onComplete();
+        })
+      )
       .subscribe({
         next: (data) => this.initializeWithData(data),
         error: () => {
+          if (onComplete) onComplete();
           void this.router.navigate(['tournaments']);
         },
       });
@@ -169,13 +173,5 @@ export class TeamHomePage implements OnInit {
     return `${winIndicator}${teamScore}-${opponentScore}`;
   }
 
-  private async showToast(message: string): Promise<void> {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      position: 'bottom',
-    });
-    await toast.present();
-  }
 }
 
