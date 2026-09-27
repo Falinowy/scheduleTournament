@@ -1,5 +1,4 @@
 import { inject, Injectable, signal, Signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -18,13 +17,21 @@ export class EliteApiService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly tournamentsSignal = toSignal(
-    this.http.get<(Tournament & { key: string })[]>(`${this.baseUrl}/tournaments`),
-    { initialValue: [] }
-  );
+  private readonly tournamentsSignal = signal<(Tournament & { key: string })[]>([]);
+
+  constructor() {
+    this.refreshTournaments();
+  }
 
   getTournaments(): Signal<(Tournament & { key: string })[]> {
     return this.tournamentsSignal;
+  }
+
+  refreshTournaments(): void {
+    this.http.get<(Tournament & { key: string })[]>(`${this.baseUrl}/tournaments`).subscribe({
+      next: (data) => this.tournamentsSignal.set(data || []),
+      error: (err) => console.error('Failed to load tournaments', err)
+    });
   }
 
   getTournamentData(tourneyId: string): Observable<TourneyData> {
@@ -41,15 +48,23 @@ export class EliteApiService {
       );
   }
 
-  addTournament(tournament: Tournament): void {
-    this.http.post(`${this.baseUrl}/tournaments`, tournament).subscribe({
-      error: (err) => console.error('Failed to add tournament', err)
-    });
+  addTournament(tournament: Tournament): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/tournaments`, tournament).pipe(
+      tap(() => this.refreshTournaments())
+    );
   }
 
-  addTeam(team: Team, tourneyId: string): void {
-    this.http.post(`${this.baseUrl}/tournaments/${tourneyId}/teams`, team).subscribe({
-      error: (err) => console.error('Failed to add team', err)
-    });
+  addTeam(team: Team, tourneyId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/tournaments/${tourneyId}/teams`, team);
+  }
+
+  deleteTournament(tourneyId: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/tournaments/${tourneyId}`).pipe(
+      tap(() => this.refreshTournaments())
+    );
+  }
+
+  deleteTeam(tourneyId: string, teamId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/tournaments/${tourneyId}/teams/${teamId}`);
   }
 }

@@ -13,20 +13,39 @@
     <div formGroupName="teams">
         <ion-item>
           <ion-label position="floating">Id</ion-label>
-          <ion-input formControlName="id" type="string"></ion-input>
+          <ion-input formControlName="id" type="number" min="1"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Coach</ion-label>
-          <ion-input formControlName="coach" type="string"></ion-input>
+          <ion-input formControlName="coach" type="text" maxlength="50"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Name</ion-label>
-          <ion-input formControlName="name" type="string"></ion-input>
+          <ion-input formControlName="name" type="text" maxlength="50"></ion-input>
         </ion-item>
-        <ion-item>
-          <ion-label position="floating">Division</ion-label>
-          <ion-input formControlName="division" type="string"></ion-input>
-        </ion-item>
+
+        @if (isNewDivision) {
+          <ion-item>
+            <ion-label position="floating">New Division</ion-label>
+            <ion-input formControlName="division" type="text" maxlength="50"></ion-input>
+          </ion-item>
+          @if (existingDivisions.length > 0) {
+            <div class="ion-text-right">
+              <ion-button fill="clear" size="small" (click)="toggleDivisionInput()">Select existing division</ion-button>
+            </div>
+          }
+        } @else {
+          <ion-item>
+            <ion-select label="Division" labelPlacement="floating" formControlName="division" interface="popover">
+              @for (div of existingDivisions; track div) {
+                <ion-select-option [value]="div">{{ div }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <div class="ion-text-right">
+            <ion-button fill="clear" size="small" (click)="toggleDivisionInput()">Add new division</ion-button>
+          </div>
+        }
       </div>
       <ion-button expand="block" (click)="addTeam()" class="ion-margin-top" [disabled]="!form.valid">Add team
       </ion-button>

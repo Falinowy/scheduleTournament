@@ -9,7 +9,7 @@ describe('StandingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ StandingsComponent ],
+      imports: [ StandingsComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 

@@ -39,7 +39,7 @@ export class MyTeamsPage {
       .getTournamentData(favourite.tournamentId)
       .pipe(take(1))
       .subscribe(() => {
-        void this.router.navigate(['team-home', favourite.team.id]);
+        void this.router.navigate(['team-home', favourite.tournamentId, favourite.team.id]);
       });
   }
 

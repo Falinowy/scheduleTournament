@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { AppMenuService } from './services/app-menu.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { AppMenuService } from './services/app-menu.service';
 })
 export class AppComponent implements OnInit {
   readonly appMenu = inject(AppMenuService);
+  readonly appVersion = environment.appVersion;
   private readonly router = inject(Router);
   private readonly storage = inject(Storage);
 
@@ -29,15 +31,6 @@ export class AppComponent implements OnInit {
     this.closeMenu();
   }
 
-  goVibration(): void {
-    void this.router.navigate(['vibration']);
-    this.closeMenu();
-  }
-
-  goGeolocation(): void {
-    void this.router.navigate(['geolocation']);
-    this.closeMenu();
-  }
 
   private closeMenu(): void {
     this.appMenu.close();

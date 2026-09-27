@@ -9,9 +9,12 @@
 
 <ion-content>
   <ion-list>
-    @for (tournament of tournaments(); track tournament.id) {
+    @for (tournament of tournaments(); track tournament.key) {
       <ion-item>
         <ion-button shape="round" (click)="selectTournament(tournament)">{{tournament.name}}</ion-button>
+        <ion-button slot="end" fill="clear" color="danger" (click)="deleteTournament(tournament)">
+          <ion-icon name="trash" slot="icon-only"></ion-icon>
+        </ion-button>
       </ion-item>
     }
   </ion-list>

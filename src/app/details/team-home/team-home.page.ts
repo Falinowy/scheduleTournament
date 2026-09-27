@@ -1,4 +1,5 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AlertController, ToastController, IonicModule } from '@ionic/angular';
@@ -19,6 +20,7 @@ import { UserSettingsService } from '../../services/user-settings.service';
   imports: [IonicModule, FormsModule, GamesComponent, StandingsComponent],
 })
 export class TeamHomePage implements OnInit {
+  tourneyId = input.required<string>();
   teamId = input.required<string>();
 
   allStandings: Standings[] = [];
@@ -27,6 +29,7 @@ export class TeamHomePage implements OnInit {
   allGames: TeamGameView[] = [];
   useDateFilter = false;
   isFollowing = false;
+  isLoading = signal(true);
   games?: TeamGameView[];
   team!: Team;
   tourneyData!: TourneyData;
@@ -36,24 +39,10 @@ export class TeamHomePage implements OnInit {
   private readonly alertController = inject(AlertController);
   private readonly toastController = inject(ToastController);
   private readonly userSettings = inject(UserSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
-    const currentTourney = this.eliteApi.currentTourney();
-    if (!currentTourney) {
-      void this.router.navigate(['tournaments']);
-      return;
-    }
-
-    const foundTeam = currentTourney.teams.find((t) => t.id === Number(this.teamId()));
-    if (!foundTeam) {
-      void this.router.navigate(['tournaments']);
-      return;
-    }
-
-    this.team = foundTeam;
-    this.tourneyData = currentTourney;
-    this.loadGames();
-    this.loadStandings();
+    this.loadData();
   }
 
   dateChanged(): void {
@@ -85,7 +74,7 @@ export class TeamHomePage implements OnInit {
           text: 'Yes',
           handler: async () => {
             this.isFollowing = false;
-            await this.userSettings.unfollowTeam(this.team);
+            await this.userSettings.unfollowTeam(this.team, this.tourneyData.tournament.id);
             await this.showToast('You have unfollowed this team');
           },
         },
@@ -97,6 +86,41 @@ export class TeamHomePage implements OnInit {
 
   goHome(): void {
     void this.router.navigate(['my-teams']);
+  }
+
+  private loadData(): void {
+    // Use cached data if it matches the current tournament
+    const cached = this.eliteApi.currentTourney();
+    if (cached && cached.tournament?.id === this.tourneyId()) {
+      this.initializeWithData(cached);
+      return;
+    }
+
+    // Otherwise fetch from API
+    this.eliteApi
+      .getTournamentData(this.tourneyId())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => this.initializeWithData(data),
+        error: () => {
+          void this.router.navigate(['tournaments']);
+        },
+      });
+  }
+
+  private initializeWithData(data: TourneyData): void {
+    this.isLoading.set(false);
+
+    const foundTeam = data.teams.find((t) => t.id === Number(this.teamId()));
+    if (!foundTeam) {
+      void this.router.navigate(['teams', this.tourneyId()]);
+      return;
+    }
+
+    this.team = foundTeam;
+    this.tourneyData = data;
+    this.loadGames();
+    this.loadStandings();
   }
 
   private loadGames(): void {
@@ -114,7 +138,7 @@ export class TeamHomePage implements OnInit {
 
     if (this.team.id != null) {
       void this.userSettings
-        .isFavouriteTeam(this.team.id.toString())
+        .isFavouriteTeam(this.tourneyData.tournament.id, this.team.id.toString())
         .then((value) => (this.isFollowing = value));
     }
   }
@@ -154,3 +178,4 @@ export class TeamHomePage implements OnInit {
     await toast.present();
   }
 }
+

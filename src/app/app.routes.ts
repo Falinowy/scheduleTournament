@@ -14,21 +14,14 @@ export const routes: Routes = [
     loadComponent: () => import('./home/teams/teams.page').then( m => m.TeamsPage)
   },
   {
-    path: 'game/:gameId',
+    path: 'game/:tourneyId/:gameId',
     loadComponent: () => import('./details/game/game.page').then( m => m.GamePage)
   },
   {
-    path: 'team-home/:teamId',
+    path: 'team-home/:tourneyId/:teamId',
     loadComponent: () => import('./details/team-home/team-home.page').then( m => m.TeamHomePage)
   },
-  {
-    path: 'vibration',
-    loadComponent: () => import('./additional-functions/vibration/vibration.page').then( m => m.VibrationPage)
-  },
-  {
-    path: 'geolocation',
-    loadComponent: () => import('./additional-functions/geolocation/geolocation.page').then( m => m.GeolocationPage)
-  },
+
   {
     path: 'new-tournament',
     loadComponent: () => import('./home/new-tournament/new-tournament.page').then( m => m.NewTournamentPage)

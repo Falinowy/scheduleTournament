@@ -20,20 +20,14 @@
               <ion-label>Find a tournament</ion-label>
             </ion-item>
           </ion-menu-toggle>
-          <ion-menu-toggle auto-hide="false">
-            <ion-item button (click)="goVibration()">
-              <ion-icon name="phone-portrait-outline" slot="start"></ion-icon>
-              <ion-label>Check your vibration</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle auto-hide="false">
-            <ion-item button (click)="goGeolocation()">
-              <ion-icon name="location-outline" slot="start"></ion-icon>
-              <ion-label>Check your geolocation</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
+
         </ion-list>
       </ion-content>
+      <ion-footer class="menu-version-footer">
+        <ion-toolbar>
+          <ion-label class="version-label">v{{ appVersion }}</ion-label>
+        </ion-toolbar>
+      </ion-footer>
     </ion-menu>
 
     <div class="ion-page" id="main">

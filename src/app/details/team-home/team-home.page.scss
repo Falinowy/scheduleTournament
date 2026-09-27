@@ -3,10 +3,10 @@ col {
 }
 h4 {
   font-weight: bold;
-  color:#3dc2ff;
+  color: var(--ion-color-secondary);
 }
 h1 {
   font-weight: bold;
-  text-align:center;
-  color: red;
+  text-align: center;
+  color: var(--ion-color-primary);
 }

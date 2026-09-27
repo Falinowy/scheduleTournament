@@ -1,13 +1,15 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { IonicModule, ModalController, SearchbarCustomEvent } from '@ionic/angular';
+import { IonicModule, ModalController, SearchbarCustomEvent, AlertController } from '@ionic/angular';
 import { DivisionTeamsGroup } from '../../models/division-teams-group.model';
 import { Team } from '../../models/teams.model';
 import { Tournament } from '../../models/tournament.model';
 import { EliteApiService } from '../../services/elite-api.service';
 import { NewTeamPage } from '../new-team/new-team.page';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-teams',
@@ -26,13 +28,15 @@ export class TeamsPage implements OnInit {
   private readonly eliteApi = inject(EliteApiService);
   private readonly modalController = inject(ModalController);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly alertController = inject(AlertController);
+  private readonly toastService = inject(ToastService);
 
   ngOnInit(): void {
     this.loadTournamentData();
   }
 
   selectTeam(team: Team): void {
-    void this.router.navigate(['team-home', team.id]);
+    void this.router.navigate(['team-home', this.tourneyId(), team.id]);
   }
 
   searchTeam(event: SearchbarCustomEvent): void {
@@ -53,9 +57,10 @@ export class TeamsPage implements OnInit {
   async openNewTeamModal(): Promise<void> {
     const tourney = this.selectedTourney();
     if (!tourney) return;
+    const divisions = this.allTeamDivisions().map((d) => d.divisionName);
     const modal = await this.modalController.create({
       component: NewTeamPage,
-      componentProps: { tournament: tourney },
+      componentProps: { tournament: tourney, existingDivisions: divisions },
       canDismiss: true,
     });
     await modal.present();
@@ -66,6 +71,31 @@ export class TeamsPage implements OnInit {
     }
   }
 
+  async deleteTeam(team: Team): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Confirm Delete',
+      message: `Are you sure you want to delete team ${team.name}?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () => {
+            this.eliteApi.deleteTeam(this.tourneyId(), team.id).subscribe({
+              next: () => this.loadTournamentData(),
+              error: async (err: HttpErrorResponse) => {
+                console.error('Failed to delete team', err);
+                const message = err.error?.detail || 'An unexpected error occurred while deleting the team.';
+                await this.toastService.showError(message);
+              }
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
   private loadTournamentData(): void {
     this.isLoading.set(true);
     this.eliteApi
@@ -74,14 +104,23 @@ export class TeamsPage implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isLoading.set(false))
       )
-      .subscribe((result) => {
-        if (!result) {
-          return;
+      .subscribe({
+        next: (result) => {
+          if (!result) {
+            return;
+          }
+          this.selectedTourney.set(result.tournament);
+          const divisions = this.groupTeamsByDivision(result.teams);
+          this.allTeamDivisions.set(divisions);
+          this.teams.set(divisions);
+        },
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 404) {
+            void this.router.navigate(['/tournaments']);
+          } else {
+            console.error('Failed to load tournament data', err);
+          }
         }
-        this.selectedTourney.set(result.tournament);
-        const divisions = this.groupTeamsByDivision(result.teams);
-        this.allTeamDivisions.set(divisions);
-        this.teams.set(divisions);
       });
   }
 

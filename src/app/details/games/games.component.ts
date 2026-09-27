@@ -20,7 +20,7 @@ export class GamesComponent {
   gameClicked(game: TeamGameView): void {
     const sourceGame = this.tourneyData().games.find((g) => g.id === game.gameId);
     if (sourceGame) {
-      void this.router.navigate(['game', sourceGame.id]);
+      void this.router.navigate(['game', this.tourneyData().tournament.id, sourceGame.id]);
     }
   }
 
